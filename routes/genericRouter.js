@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
+const db = require('../db'); 
 
 const tablePK = {
   task: 'task_id',
@@ -41,7 +42,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 2. GET /api/:table/:id -> ดึงข้อมูลทีละตัวด้วย ID 
+// 2. GET /api/:table/:id -> ดึงข้อมูลทีละตัวด้วย ID
 router.get('/:id', async (req, res) => {
   const table = req.params.table;
   const id = req.params.id;
@@ -67,11 +68,16 @@ router.get('/:id', async (req, res) => {
 });
 
 // 3. DELETE /api/:table/:id -> ลบข้อมูล
-router.delete('/:', async (req, res) => {
+router.delete('/:id', async (req, res) => { 
   const table = req.params.table;
   const id = req.params.id;
   
   if (!isAllowed(table)) return res.status(404).json({ error: 'Unknown table' }); 
+
+  if (table === 'users') {
+    return res.status(403).json({ error: 'Deleting users is currently disabled' });
+  }
+
   const pk = tablePK[table];
   try {
     let rows;

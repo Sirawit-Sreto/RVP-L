@@ -4,6 +4,7 @@ const apiRoutes = require('./routes/api');
 require('dotenv').config();
 
 const app = express();
+const db = require('./db');
 
 // Middlewares
 app.use(cors());
@@ -14,7 +15,7 @@ app.use('/api', apiRoutes);
 
 // หน้าแรกทดสอบระบบสถานะเซิร์ฟเวอร์
 app.get('/', (req, res) => {
-  res.json({ message: "Backend PM & Outsource System is running smoothly! 🚀" });
+  res.json({ message: "Backend is running " });
 });
 
 const PORT = process.env.PORT || 5000;
