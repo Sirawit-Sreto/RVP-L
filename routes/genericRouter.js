@@ -50,7 +50,7 @@ async function checkLoadBalancerMiddleware(req, res, next) {
       console.log(`[SUCCESS] PostgreSQL is ready for table : ${table}`);
       next(); 
     } else {
-      console.log(`[SERVER ERROR] ${response.status}] Table "${table}" not found (status: ${response.status})`);
+      console.log(`[SERVER ERROR ${response.status} ]  Table "${table}" not found `);
       res.status(502).json({ error: `${response.status} Table ${table} Failed system health check` });
     }
   } catch (error) {
@@ -67,7 +67,7 @@ router.get('/', async (req, res) => {
   try {
     let queryText = `SELECT * FROM ${table}`;
     if (table === 'projects' || table === 'users') {
-      queryText += ` WHERE is_deleted = false`;
+      // queryText += ` WHERE is_deleted = false`; เอาไว้เผื่อตอนที่ไม่ต้องการให้โชว์คนที่โดนลบออกไปแล้ว
     }
     queryText += ` ORDER BY ${tablePK[table]} DESC LIMIT 100`;
 
@@ -87,7 +87,7 @@ router.get('/:id', async (req, res) => {
   let queryText = `SELECT * FROM ${table} WHERE ${pk} = $1`;
   const { rows } = await db.query(queryText, [id]);
 
-  if (rows.length === 0) {
+  if (rows.length === 0) { // สำหรับที่ไม่มี id
     return res.status(404).json({ 
       error: `Table: ${table} you are looking for was not found` 
     });
@@ -95,59 +95,62 @@ router.get('/:id', async (req, res) => {
   const projectData = rows[0];
 
   if (projectData.is_deleted === true) {
-    return res.status(410).json({ 
-      message: `ID ${id} exists, but it has been deleted (is_deleted: true)`,
+    return res.status(410).json({ // สำหรับ is_deleted = true
+      message: `ID ${id} exists, but it has been deleted from the table : ${table} `,
       data: projectData 
     });
   }
 
-  return res.json(projectData);
+  return res.json(projectData); //สำหรับคนที่มี id และไม่ได้ถูกลบออก
 
 } catch (err) {
-  return res.status(500).json({ error: err.message });
+  return res.status(500).json({ error: err.message }); // สำรหับ error เช่นพิมพ์คำสั่งผิดหากกด send ใน postman จะแสดงว่าผิดยังไง
 }
 });
 
-// 3. DELETE /api/:table/:id -> ลบข้อมูล
+// 3. DELETE /api/:table and users/:id -> ลบข้อมูล
 router.delete('/:id', async (req, res) => { 
   const table = req.params.table;
   const id = req.params.id;
-  
-  if (table === 'users') {
-    return res.status(403).json({ error: 'Deleting users is currently disabled' });
-  }
-
   const pk = tablePK[table];
+
   try {
-    let rows;
-    if (table === 'projects') {
-      const result = await db.query(
-        `UPDATE projects SET is_deleted = true WHERE project_id = $1 AND is_deleted = false RETURNING *`,[id]
+    let result;
+
+    if (table === 'projects' || table === 'users') {
+      result = await db.query(
+        `UPDATE ${table} SET is_deleted = true WHERE ${pk} = $1 AND is_deleted = false RETURNING *`,
+        [id]
       );
-      rows = result.rows;
     } else {
-      const result = await db.query(
+      result = await db.query(
         `DELETE FROM ${table} WHERE ${pk} = $1 RETURNING *`,
         [id]
       );
-      rows = result.rows;
     }
     
+    const rows = result.rows; 
+
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({ 
+        error: `The item with ID ${id} in table "${table}" was not found, or it was already deleted!` 
+      });
+    } 
+
     const deletedItem = rows[0];
 
     if (table === 'projects' || table === 'users') {
-      deletedItem.is_deleted = true;
       return res.status(200).json({ 
         success: true,
-        message: `The ${table} with ID ${id} was marked as deleted`,
+        message: `The ${table} with ID ${id} was marked as deleted successfully`,
         deletedItem
       });
     }
     
-    res.json({ 
+    return res.json({ 
       success: true,
       message: `The ${table} with ID ${id} was deleted successfully`,
-      deletedItem: rows[0] 
+      deletedItem: deletedItem 
     });
     
   } catch (err) {

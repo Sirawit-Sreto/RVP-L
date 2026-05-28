@@ -1,43 +1,77 @@
 # PM & Outsource Backend
 
-Simple Express + PostgreSQL backend to serve as an API for the frontend.
+Express + PostgreSQL backend providing simple generic CRUD routes for frontend use.
 
-Quick start
+**Requirements**
+- Node.js (14+ recommended)
+- PostgreSQL database
 
-1. Create a `.env` file in `backend/` with your database connection, for example:
+**Environment**
+Create a `.env` file in the `backend/` folder with at least:
 
 ```
 DATABASE_URL=postgres://user:password@localhost:5432/dbname
 PORT=5000
 ```
 
-2. Install dependencies and start:
+This project reads the database URL from `process.env.DATABASE_URL`.
+
+**Install & Run**
 
 ```bash
 cd backend
 npm install
-npm run dev   # or npm start
+# Development (auto-restarts):
+npm run dev
+# Production:
+npm start
 ```
 
-3. Load schema into your Postgres database:
+**Database**
+Load the schema into your Postgres database (replace with your connection string):
+
+
+**API Overview**
+- Base route: `/api`
+- Generic table router: `/api/:table` (supports CRUD and simple health check)
+
+Allowed tables and their primary keys: tablePK
+
+- `task` (task_id)
+- `outsource` (user_out_id)
+- `users` (user_id)
+- `roles` (role_id)
+- `cr` (cr_id)
+- `request` (req_id)
+- `projects` (project_id)
+- `status` (status_id)
+- `tags` (tag_id)
+- `category` (category_id)
+- `types` (type_id)
+- `department` (department_id)
+- `position` (position_id)
+- `config` (config_id)
+
+Additional endpoints:
+- `GET /api/:table/health-check-status/:table` — checks DB connectivity for the table and returns `{ ready: true }` when healthy.
+
+Examples (curl)
 
 ```bash
-psql $DATABASE_URL -f schema.sql
+# List up to 100 rows from `users`:
+curl http://localhost:5000/api/users
+
+# Get a single item by id:
+curl http://localhost:5000/api/users/123
+
+# Health check for `tablePK`:
+curl http://localhost:5000/api/users/health-check-status/users
+curl http://localhost:5000/api/users/health-check-status/projects
 ```
 
-API
+**Notes**
+- The server uses `express.json()` and `cors()` by default.
+- Deleting `projects` marks them as `is_deleted = true` (soft delete). Deleting `users` is disabled.
+- The project previously referenced Postman collections; those files are not included in the repository.
 
-- Generic CRUD endpoints are exposed under `/api/:table`.
-- Allowed tables: `task`, `outsource`, `users`, `roles`, `cr`, `request`, `projects`, `status`, `tags`, `category`, `types`, `department`, `position`, `config`.
-
-Examples
-
-GET /api/users
-POST /api/users { "user_firstname": "John", "user_lastname": "Doe" }
-
-Postman
-
-- Import the collection at [backend/postman_collection.json](backend/postman_collection.json) into Postman.
-- Optionally import the environment at [backend/postman_environment.json](backend/postman_environment.json) and select it.
-- Ensure your `baseUrl` (in environment) matches `http://localhost:5000` (or whatever `PORT` you set).
-- Use the example requests to exercise the API (create -> list -> update -> delete).
+If you want, I can also add example Postman/Insomnia collections or add a Docker compose file to run Postgres locally.

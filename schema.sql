@@ -52,6 +52,7 @@ CREATE TABLE cr (
   cr_no VARCHAR(100) NOT NULL,
   cr_detail TEXT,
   create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  close_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE task (
@@ -73,7 +74,8 @@ CREATE TABLE request (
   project_id INT REFERENCES projects(project_id) ON DELETE CASCADE,
   req_no VARCHAR(100) NOT NULL,
   req_detail TEXT,
-  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  close_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE outsource (
