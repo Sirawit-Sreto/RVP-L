@@ -6,14 +6,16 @@ require('dotenv').config();
 const app = express();
 const db = require('./db');
 
-// Middlewares
+
 app.use(cors());
 app.use(express.json());
 
-// นำเราเตอร์ API มาผูกพ่วงใช้งาน
-app.use('/api', apiRoutes);
 
-// หน้าแรกทดสอบระบบสถานะเซิร์ฟเวอร์
+app.use('/api', apiRoutes);
+const genericRouter = require('./routes/genericRouter');
+app.use('/api/:table', genericRouter);
+
+
 app.get('/', (req, res) => {
   res.json({ message: "Backend is running " });
 });

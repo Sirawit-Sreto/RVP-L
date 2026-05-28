@@ -19,22 +19,58 @@ const tablePK = {
   config: 'config_id'
 };
 
-function isAllowed(table) {
+function isAllowed(table) { // ตรวจสอบว่า table ที่ร้องขอมีอยู่ใน tablePK หรือไม่
   return Object.prototype.hasOwnProperty.call(tablePK, table);
 }
+
+
+router.get('/health-check-status/:table', async (req, res) => { 
+  const table = req.params.table;
+  if (!isAllowed(table)) return res.status(404).json({ ready: false, error: `Table : ${table} you are looking for was not found` });
+
+  try {
+    await db.query('SELECT 1'); 
+    res.status(200).json({ ready: true, message: `Database connection for ${table} is healthy` });
+  } catch (err) {
+    res.status(503).json({ ready: false, error: err.message });
+  }
+});
+
+
+async function checkLoadBalancerMiddleware(req, res, next) {
+  const table = req.params.table;
+
+  if (req.path.startsWith('/health-check-status')) {
+    return next();
+  }
+  try {
+    const response = await fetch(`http://localhost:5000/api/${table}/health-check-status/${table}`);
+
+    if (response.status === 200) { 
+      console.log(`[SUCCESS] PostgreSQL is ready for table : ${table}`);
+      next(); 
+    } else {
+      console.log(`[SERVER ERROR] ${response.status}] Table "${table}" not found (status: ${response.status})`);
+      res.status(502).json({ error: `${response.status} Table ${table} Failed system health check` });
+    }
+  } catch (error) {
+    console.log(`[NETWORK ERROR] Cannot connect to system check for ${table}`);
+    res.status(503).json({ error: `Table ${table} Network Error: ${error.message}` });
+  }
+}
+router.use(checkLoadBalancerMiddleware);
+
 
 // 1. GET /api/:table -> ดึงข้อมูลทั้งหมดในตารางนั้นๆ
 router.get('/', async (req, res) => {
   const table = req.params.table;
-  if (!isAllowed(table)) return res.status(404).json({ error: 'Unknown table' });
   try {
     let queryText = `SELECT * FROM ${table}`;
     if (table === 'projects' || table === 'users') {
       queryText += ` WHERE is_deleted = false`;
     }
-    
     queryText += ` ORDER BY ${tablePK[table]} DESC LIMIT 100`;
-    
+
     const { rows } = await db.query(queryText);
     res.json(rows);
   } catch (err) {
@@ -46,20 +82,17 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const table = req.params.table;
   const id = req.params.id;
-  if (!isAllowed(table)) return res.status(404).json({ error: 'Unknown table' });
   const pk = tablePK[table];
   try {
     let queryText = `SELECT * FROM ${table} WHERE ${pk} = $1`;
-    
     if (table === 'projects' || table === 'users') {
       queryText += ` AND is_deleted = false`;
     }
-    
     queryText += ` LIMIT 1`;
     
     const { rows } = await db.query(queryText, [id]);
     if (rows.length === 0) {
-      return res.status(404).json({ error: `The ${table} you are looking for was not found` });
+      return res.status(404).json({ error: `Table : ${table} you are looking for was not found` });
     }
     res.json(rows[0]);
   } catch (err) {
@@ -72,8 +105,6 @@ router.delete('/:id', async (req, res) => {
   const table = req.params.table;
   const id = req.params.id;
   
-  if (!isAllowed(table)) return res.status(404).json({ error: 'Unknown table' }); 
-
   if (table === 'users') {
     return res.status(403).json({ error: 'Deleting users is currently disabled' });
   }
@@ -83,8 +114,7 @@ router.delete('/:id', async (req, res) => {
     let rows;
     if (table === 'projects') {
       const result = await db.query(
-        `UPDATE projects SET is_deleted = true WHERE project_id = $1 AND is_deleted = false RETURNING *`,
-        [id]
+        `UPDATE projects SET is_deleted = true WHERE project_id = $1 AND is_deleted = false RETURNING *`,[id]
       );
       rows = result.rows;
     } else {
@@ -95,15 +125,24 @@ router.delete('/:id', async (req, res) => {
       rows = result.rows;
     }
     
-    if (rows.length === 0) {
-      return res.status(404).json({ error: `The item you want to delete from ${table} was not found` });
+    // if (rows.length === 0) {
+    //   return res.status(204).json({ error: `Table : ${table} you are looking for was not found` });
+    // }
+    
+    const deletedItem = rows[0];
+
+    if (table === 'projects' || table === 'users') {
+      deletedItem.is_deleted = true;
+      return res.status(200).json({ 
+        success: true,
+        message: `The ${table} with ID ${id} was marked as deleted`,
+        deletedItem
+      });
     }
     
     res.json({ 
       success: true,
-      message: table === 'projects' 
-        ? 'The project was soft-deleted successfully' 
-        : `The item from ${table} was deleted permanently`, 
+      message: `The ${table} with ID ${id} was deleted successfully`,
       deletedItem: rows[0] 
     });
     

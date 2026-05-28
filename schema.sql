@@ -29,6 +29,7 @@ CREATE TABLE projects (
   task_id INT REFERENCES task(task_id) ON DELETE SET NULL,
   config_id INT REFERENCES config(config_id) ON DELETE SET NULL,
   project_name VARCHAR(255) NOT NULL,
+  company_name VARCHAR(255) ,
   start_project VARCHAR(255) NOT NULL,
   end_project VARCHAR(255),
   project_pic TEXT,
@@ -86,31 +87,32 @@ CREATE TABLE outsource (
   update_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE tags (
+
+CREATE TABLE tags ( -- สถานะสิ่งที่แก้ไข 
   tag_id SERIAL PRIMARY KEY,
   tag_name VARCHAR(100) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE category (
+CREATE TABLE category ( -- mobile app, .net app
   category_id SERIAL PRIMARY KEY,
   category_name VARCHAR(100) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE types (
+CREATE TABLE types ( -- IN/OUT source
   type_id SERIAL PRIMARY KEY,
   type_name VARCHAR(100) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE department (
+CREATE TABLE department ( -- ฝ่ายที่เกี่ยวข้อง
   department_id SERIAL PRIMARY KEY,
   department_name VARCHAR(100) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE position (
+CREATE TABLE position ( -- ตำแหน่งงานใน project
   position_id SERIAL PRIMARY KEY,
   position_name VARCHAR(100) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
