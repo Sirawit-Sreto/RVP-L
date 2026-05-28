@@ -83,21 +83,29 @@ router.get('/:id', async (req, res) => {
   const table = req.params.table;
   const id = req.params.id;
   const pk = tablePK[table];
-  try {
-    let queryText = `SELECT * FROM ${table} WHERE ${pk} = $1`;
-    if (table === 'projects' || table === 'users') {
-      queryText += ` AND is_deleted = false`;
-    }
-    queryText += ` LIMIT 1`;
-    
-    const { rows } = await db.query(queryText, [id]);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: `Table : ${table} you are looking for was not found` });
-    }
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    try {
+  let queryText = `SELECT * FROM ${table} WHERE ${pk} = $1`;
+  const { rows } = await db.query(queryText, [id]);
+
+  if (rows.length === 0) {
+    return res.status(404).json({ 
+      error: `Table: ${table} you are looking for was not found` 
+    });
   }
+  const projectData = rows[0];
+
+  if (projectData.is_deleted === true) {
+    return res.status(410).json({ 
+      message: `ID ${id} exists, but it has been deleted (is_deleted: true)`,
+      data: projectData 
+    });
+  }
+
+  return res.json(projectData);
+
+} catch (err) {
+  return res.status(500).json({ error: err.message });
+}
 });
 
 // 3. DELETE /api/:table/:id -> ลบข้อมูล
@@ -124,10 +132,6 @@ router.delete('/:id', async (req, res) => {
       );
       rows = result.rows;
     }
-    
-    // if (rows.length === 0) {
-    //   return res.status(204).json({ error: `Table : ${table} you are looking for was not found` });
-    // }
     
     const deletedItem = rows[0];
 
