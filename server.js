@@ -1,22 +1,20 @@
-const express = require('express');
-const cors = require('cors');
-const apiRoutes = require('./routes/api');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const apiRoutes = require("./routes/api");
+require("dotenv").config();
 
 const app = express();
-const db = require('./db');
-
+const db = require("./db");
 
 app.use(cors());
 app.use(express.json());
 
+app.use("/api", apiRoutes);
+const genericRouter = require("./routes/genericRouter");
+app.use("/api/:table", genericRouter);
+app.use("/health-check-status", () => {});
 
-app.use('/api', apiRoutes);
-const genericRouter = require('./routes/genericRouter');
-app.use('/api/:table', genericRouter);
-
-
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.json({ message: "Backend is running " });
 });
 
