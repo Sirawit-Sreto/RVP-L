@@ -126,3 +126,12 @@ CREATE TABLE config (
   group_choice VARCHAR(100) NOT NULL,
   create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- note config (drop down)
+-- group_choice = tags, category, types, department, position
+-- category = mobile app_master, .net app_master
+-- types = INnHouse_master, OutSource_master
+-- tags = Bug_master, Pending Review_master
+-- position = PM_master,SA_master, UXUI_master, Dev_master
+-- department = Information Technology_master, Software Development_master, DevOps & Infrastructure_master
