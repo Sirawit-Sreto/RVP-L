@@ -33,8 +33,7 @@ router.use(checkTableAvailable);
 // 1. GET /:table -> ดึงข้อมูลทั้งหมดในตารางนั้นๆ
 router.get("/", async (req, res) => {
   const table = req.params.table;
-  console.log("GET", table);
-
+  console.log("GET "+table+" all");
   try {
     const result = await genericService.get_table_data(table);
     res.json(result);
