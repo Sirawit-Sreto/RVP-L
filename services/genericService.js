@@ -2,21 +2,16 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const db = require("../db");
 
-const tablePK = {
-  task: "task_id",
-  outsource: "user_out_id",
-  users: "user_id",
-  roles: "role_id",
-  cr: "cr_id",
-  request: "req_id",
-  projects: "project_id",
-  status: "status_id",
-  tags: "tag_id",
-  category: "category_id",
-  types: "type_id",
-  department: "department_id",
-  position: "position_id",
-  config: "config_id",
+const get_primary_key_name = async (table) => {
+  const pkQuery = `
+    SELECT a.attname AS pk
+    FROM pg_index i
+    JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
+    WHERE i.indrelid = $1::regclass AND i.indisprimary;
+  `;
+  
+  const { rows } = await db.query(pkQuery, [table]);
+  return rows[0].pk;
 };
 
 // 0. Check Table Available
@@ -28,12 +23,12 @@ const check_table_available = async (table) => {
   `;
   const { rows } = await db.query(checkQuery, [table]);
 
-  // ถ้าไม่เจอตารางในระบบ
+  // ถ้าไม่เจอตารางในdatabase
   if (rows.length === 0) {
-    const error = new Error(`Table does not exist in the database.`);
+    const error = new Error('Table ' + table + ' does not exist or has no Primary Key.');
     error.status = 404;
     throw error;
-  }
+}
 
   return table;
 }
@@ -45,7 +40,7 @@ const get_table_data = async (table) => {
   // if (table === "projects" || table === "users") {
   //   queryText += ` WHERE is_deleted = false`;
   // }
-  queryText += ` ORDER BY ${tablePK[table]} DESC LIMIT 100`;
+  queryText += ` ORDER BY ${await get_primary_key_name(table)} DESC LIMIT 100`;
   queryText = queryText.replace('@table', table);
   const { rows } = await db.query(queryText);
   return rows;
@@ -53,8 +48,10 @@ const get_table_data = async (table) => {
 
 // // 2. GET ดึงข้อมูลตาม ID
 async function get_table_from_dataId(table, id) {
-  let queryText = `SELECT * FROM @table WHERE ${tablePK[table]} = $1`;
+  const pk = await get_primary_key_name(table);
+  let queryText = `SELECT * FROM @table WHERE @pk = $1`;
   queryText = queryText.replace('@table', table);
+  queryText = queryText.replace('@pk', pk);
   const { rows } = await db.query(queryText, [id]);
   const data = rows[0];
   return data;
@@ -62,8 +59,10 @@ async function get_table_from_dataId(table, id) {
 
 // 3. DELETE ลบข้อมูลตาม ID
 async function delete_table_from_dataId(table, id) {
-  let queryText = `UPDATE @table SET is_deleted = true WHERE ${tablePK[table]} = $1 AND is_deleted = false RETURNING *`;
+  const pk = await get_primary_key_name(table);
+  let queryText = `UPDATE @table SET is_deleted = true WHERE @pk = $1 AND is_deleted = false RETURNING *`;
   queryText = queryText.replace('@table', table);
+  queryText = queryText.replace('@pk', pk);
   const { rows } = await db.query(queryText, [id]);
   const data = rows[0];
   return data;

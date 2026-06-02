@@ -3,22 +3,16 @@ const router = express.Router({ mergeParams: true });
 const db = require("../db");
 const genericService = require("../services/genericService");
 
-
-const tablePK = {
-  task: "task_id",
-  outsource: "user_out_id",
-  users: "user_id",
-  roles: "role_id",
-  cr: "cr_id",
-  request: "req_id",
-  projects: "project_id",
-  status: "status_id",
-  tags: "tag_id",
-  category: "category_id",
-  types: "type_id",
-  department: "department_id",
-  position: "position_id",
-  config: "config_id",
+const get_primary_key_name = async (table) => {
+  const pkQuery = `
+    SELECT a.attname AS pk
+    FROM pg_index i
+    JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
+    WHERE i.indrelid = $1::regclass AND i.indisprimary;
+  `;
+  
+  const { rows } = await db.query(pkQuery, [table]);
+  return rows[0].pk;
 };
 
 async function checkTableAvailable(req, res, next) {
@@ -36,7 +30,7 @@ async function checkTableAvailable(req, res, next) {
 
 router.use(checkTableAvailable);
 
-// 1. GET /api/:table -> ดึงข้อมูลทั้งหมดในตารางนั้นๆ
+// 1. GET /:table -> ดึงข้อมูลทั้งหมดในตารางนั้นๆ
 router.get("/", async (req, res) => {
   const table = req.params.table;
   console.log("GET", table);
@@ -50,7 +44,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// 2. GET /api/:table/:id -> ดึงข้อมูลทีละตัวด้วย ID
+// 2. GET /:table/:id -> ดึงข้อมูลทีละตัวด้วย ID
 router.get("/:id", async (req, res) => {
   const { table, id } = req.params;
   console.log("GET BY ID ->", table, id);
@@ -63,7 +57,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// 3. DELETE /api/:table/:id -> ลบข้อมูลทีละตัวด้วย ID
+// 3. DELETE /:table/:id -> ลบข้อมูลทีละตัวด้วย ID
 router.delete("/:id", async (req, res) => {
   const { table, id } = req.params;
   console.log("DELETE ->", table, id);
@@ -73,7 +67,7 @@ router.delete("/:id", async (req, res) => {
     res.json(result);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message, code: err.code });
   }
 });
 
