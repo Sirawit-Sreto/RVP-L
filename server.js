@@ -4,19 +4,17 @@ const apiRoutes = require("./routes/api");
 require("dotenv").config();
 const genericService = require("./services/genericService");
 
-
-
 const app = express();
 const db = require("./db");
 
 app.use(cors());
 app.use(express.json());
 
+
 app.use("/api", apiRoutes);
 
 app.get("/test-health/:table", async (req, res) => {
   const table = req.params.table;
-  console.log("Checking health status for table:", table);
   
   try {
     const isAvailable = await genericService.check_table_available(table);
@@ -25,7 +23,7 @@ app.get("/test-health/:table", async (req, res) => {
       console.log("[SUCCESS] PostgreSQL is ready for table: " + table);
       return res.status(200).json({ 
         status: "OK", 
-        message: "Table : " + table + " is ready." 
+        message: "Table : "+table+" is ready." 
       });
     }
   } catch (error) {
@@ -38,8 +36,7 @@ app.get("/test-health/:table", async (req, res) => {
 });
 
 const genericRouter = require("./routes/genericRouter");
-app.use("/:table", genericRouter);
-
+app.use("/:table([A-Za-z0-9_]+)", genericRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "Backend is running " });
