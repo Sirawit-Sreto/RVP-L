@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans Thai", Inter, system-ui, -apple-system, sans-serif;
+
+  --color-brand-25:  var(--brand-25);
+  --color-brand-50:  var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+
+  --color-accent-500: var(--accent-500);
+  --color-accent-600: var(--accent-600);
+}
+
+:root {
+  --brand-25:  #FAF8FF;
+  --brand-50:  #F3EFFF;
+  --brand-100: #EDE9FE;
+  --brand-200: #DDD6FE;
+  --brand-300: #C4B5FD;
+  --brand-400: #9F7AEA;
+  --brand-500: #8B5CF6;
+  --brand-600: #6B46C1;
+  --brand-700: #553C9A;
+  --brand-800: #4C1D95;
+  --brand-900: #3C1361;
+
+  --accent-500: #F56565;
+  --accent-600: #E53E3E;
+}
+
+html, body, #root { min-height: 100%; }
+body {
+  margin: 0;
+  font-family: 'IBM Plex Sans Thai', 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--brand-25);
+}
+
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(.96) } to { opacity: 1; transform: scale(1) } }
+@keyframes slideInRight  { from { transform: translateX(20px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+@keyframes drawerSlideIn { from { transform: translateX(100%) } to { transform: translateX(0) } }
+.animate-fadeIn        { animation: fadeIn 160ms ease-out; }
+.animate-scaleIn       { animation: scaleIn 180ms cubic-bezier(.16,1,.3,1); }
+.animate-slideInRight  { animation: slideInRight 240ms cubic-bezier(.16,1,.3,1); }
+.animate-drawerSlideIn { animation: drawerSlideIn 280ms cubic-bezier(.16,1,.3,1); }
