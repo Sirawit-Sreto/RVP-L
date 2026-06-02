@@ -30,6 +30,10 @@ npm start
 **Database**
 Load the schema into your Postgres database (replace with your connection string):
 
+```bash
+psql "$DATABASE_URL" -f schema.sql
+```
+
 
 **API Overview**
 - Base route: `/api`
@@ -55,23 +59,19 @@ Allowed tables and their primary keys: tablePK
 Additional endpoints:
 - `GET /api/:table/health-check-status/:table` — checks DB connectivity for the table and returns `{ ready: true }` when healthy.
 
+Shortcut routes:
+- `GET /users` — convenience route that returns the same result as `GET /api/users` (implemented with route helpers).
+
 Examples (curl)
 
 ```bash
 # List up to 100 rows from `users`:
-curl http://localhost:5000/api/users
+curl http://localhost:5000/users
 
 # Get a single item by id:
-curl http://localhost:5000/api/users/123
+curl http://localhost:5000/users/123
 
 # Health check for `tablePK`:
-curl http://localhost:5000/api/users/health-check-status/users
-curl http://localhost:5000/api/users/health-check-status/projects
+curl 
+curl 
 ```
-
-**Notes**
-- The server uses `express.json()` and `cors()` by default.
-- Deleting `projects` marks them as `is_deleted = true` (soft delete). Deleting `users` is disabled.
-- The project previously referenced Postman collections; those files are not included in the repository.
-
-If you want, I can also add example Postman/Insomnia collections or add a Docker compose file to run Postgres locally.

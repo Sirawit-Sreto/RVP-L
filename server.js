@@ -14,7 +14,7 @@ app.use(express.json());
 
 app.use("/api", apiRoutes);
 
-app.get("/test-health/table-health/:table", async (req, res) => {
+app.get("/test-health/:table", async (req, res) => {
   const table = req.params.table;
   console.log("Checking health status for table:", table);
   
