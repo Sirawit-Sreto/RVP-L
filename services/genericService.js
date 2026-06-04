@@ -68,9 +68,27 @@ async function delete_table_from_dataId(table, id) {
   return data;
 };
 
+// 4. Check ID ว่ามีในตารางไหม
+async function check_id(table, id) {
+  const data = await get_table_from_dataId(table, id);
+  if (!data) {
+    throw {
+      code: 404,
+      message: `not found ID: @id in table: @table`
+        .replace('@id', id)
+        .replace('@table', table)
+    };
+  }
+  return data;
+};
+
+
+
+
 module.exports = {
   check_table_available,
   get_table_data,
   get_table_from_dataId,
   delete_table_from_dataId,
+  check_id
 };

@@ -48,7 +48,7 @@ router.get("/:id", async (req, res) => {
   const { table, id } = req.params;
   console.log("GET BY ID ->", table, id);
   try {
-    const result = await genericService.get_table_from_dataId(table, id);
+    const result = await genericService.check_id(table, id);
     res.json(result);
   } catch (err) {
     console.log(err.code);
