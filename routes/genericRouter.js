@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const db = require("../db");
 const genericService = require("../services/genericService");
+const { getconfig } = require("../services/genericService");
+
 
 const get_primary_key_name = async (table) => {
   const pkQuery = `
@@ -69,5 +71,65 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ error: err.message, code: err.code });
   }
 });
+
+// รอแก้ไข userlist
+// router.get("/users/list", async (req, res) => {
+//   try {
+//     const result = await genericService.get_table_data("users");
+//     console.log("111");
+//     res.json(result);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message, code: err.code });
+//   }
+// });
+
+// router.post("/users/add"), async (req, res) => {
+// };
+
+// router.post("/users/update"), async (req, res) => {
+// };
+
+// router.post("/users/disable"), async (req, res) => {
+// };
+
+// router.get("/projects/list"), async (req, res) => {
+// };
+
+// router.post("/projects/add"), async (req, res) => {
+// };
+
+// router.post("/projects/update"), async (req, res) => {
+// };
+
+// router.post("/projects/disable"), async (req, res) => {
+// };
+
+
+// รอแก้ไข config
+router.get("/config/list", async (req, res) => { 
+  try{
+
+
+  }
+  // const configList = await genericService.getConfigList();
+  // console.log("444")
+  // res.json(configList);
+ catch (err) {
+  console.error(err);
+  res.status(500).json({ error: err.message, code: err.code });
+}});
+
+// router.post("/config/update", async (req, res) => {
+//   const { id, value } = req.body;
+//   try {
+//     const updatedConfig = await genericService.updateConfig('config', id, value);
+//     res.json(updatedConfig);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message, code: err.code });
+//   }
+// });
+
 
 module.exports = router;
