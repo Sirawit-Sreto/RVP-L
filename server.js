@@ -42,44 +42,7 @@ app.get("/test-health/:table", async (req, res) => {
 });
 
 const genericRouter = require("./routes/genericRouter");
-app.get("/users/list", async (req, res) => {
-  try {
-    console.log("service");
-    const result = await genericService.get_table_data("users");
-    res.json(result);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message, code: err.code });
-  }
-});
-
-app.get("/config/list", async (req, res) => {
-  try {
-    console.log("service")
-    const result = await genericService.getConfigList();
-    console.log("333")
-    return res.json(result);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: err.message, code: err.code });
-  }
-});
-
-
-
-// ยังไม่ได้ test
-// app.post("/config/update", async (req, res) => {
-//   try {
-//     const { id, value } = req.body;
-//     const updatedConfig = await genericService.updateConfig('config', id, value);
-//     return res.json(updatedConfig);
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ error: err.message, code: err.code });
-//   }
-// });
-
-app.use("/:table([A-Za-z0-9_]+)", genericRouter);
+app.use('/', genericRouter);
 
 
 

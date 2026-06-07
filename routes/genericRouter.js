@@ -18,9 +18,12 @@ const get_primary_key_name = async (table) => {
 };
 
 async function checkTableAvailable(req, res, next) {
-  const table = req.params.table;
+  const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
   console.log("checkTableAvailable ->", table);
-
+  if (table && table.startsWith('.')) {
+    console.log('checkTableAvailable: skipping dot-prefixed path ->', table);
+    return next();
+  }
   try {
     await genericService.check_table_available(table);
     next();
@@ -30,106 +33,69 @@ async function checkTableAvailable(req, res, next) {
   }
 }
 
-router.use(checkTableAvailable);
+// Route declarations 
+router.get('/users/list', getAllTable);
+router.get('/projects/list', getAllTable);
+router.get('/config/list', getAllTable);
+router.get('/users/:id', getById);
+router.get('/projects/:id', getById);
+router.get('/config/:id', getById);
+router.post('/delete/users/:id', deleteById);
 
-// 1. GET /:table -> ดึงข้อมูลทั้งหมดในตารางนั้นๆ
-router.get("/", async (req, res) => {
-  const table = req.params.table;
-  console.log("GET "+table+" all");
+
+async function getAllTable(req, res) {
+  const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
+
+  console.log('GET ' + table + ' all');
+
+
   try {
     const result = await genericService.get_table_data(table);
-    res.json(result);
-  } catch (err) {
-    console.log(err.code);
-    res.status(500).json({ error: err.message, code: err.code });
-  }
-});
-
-// 2. GET /:table/:id -> ดึงข้อมูลทีละตัวด้วย ID
-router.get("/:id", async (req, res) => {
-  const { table, id } = req.params;
-  console.log("GET BY ID ->", table, id);
-  try {
-    const result = await genericService.check_id(table, id);
-    res.json(result);
-  } catch (err) {
-    console.log(err.code);
-    res.status(500).json({ error: err.message, code: err.code });
-  }
-});
-
-// 3. DELETE /:table/:id -> ลบข้อมูลทีละตัวด้วย ID
-router.delete("/:id", async (req, res) => {
-  const { table, id } = req.params;
-  console.log("DELETE ->", table, id);
-
-  try {
-  const result = await genericService.delete_table_from_dataId(table, id);
-    res.json(result);
+    return res.json(result);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message, code: err.code });
+    return res.status(500).json({ error: err.message, code: err.code });
   }
-});
+}
 
-// รอแก้ไข userlist
-// router.get("/users/list", async (req, res) => {
+// async function getConfigList(req, res) {
 //   try {
-//     const result = await genericService.get_table_data("users");
-//     console.log("111");
-//     res.json(result);
+//     const result = await genericService.getConfigList();
+//     return res.json(result);
 //   } catch (err) {
 //     console.error(err);
-//     res.status(500).json({ error: err.message, code: err.code });
+//     return res.status(500).json({ error: err.message, code: err.code });
 //   }
-// });
+// }
 
-// router.post("/users/add"), async (req, res) => {
-// };
+async function getById(req, res) {
+  const id = req.params.id;
+  const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
+  console.log('GET BY ID ->', table, id);
 
-// router.post("/users/update"), async (req, res) => {
-// };
-
-// router.post("/users/disable"), async (req, res) => {
-// };
-
-// router.get("/projects/list"), async (req, res) => {
-// };
-
-// router.post("/projects/add"), async (req, res) => {
-// };
-
-// router.post("/projects/update"), async (req, res) => {
-// };
-
-// router.post("/projects/disable"), async (req, res) => {
-// };
-
-
-// รอแก้ไข config
-router.get("/config/list", async (req, res) => { 
-  try{
-
-
+  try {
+    const result = await genericService.check_id(table, id);
+    return res.json(result);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message, code: err.code });
   }
-  // const configList = await genericService.getConfigList();
-  // console.log("444")
-  // res.json(configList);
- catch (err) {
-  console.error(err);
-  res.status(500).json({ error: err.message, code: err.code });
-}});
+}
 
-// router.post("/config/update", async (req, res) => {
-//   const { id, value } = req.body;
-//   try {
-//     const updatedConfig = await genericService.updateConfig('config', id, value);
-//     res.json(updatedConfig);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: err.message, code: err.code });
-//   }
-// });
+async function deleteById(req, res) {
+  const id = req.params.id;
+  const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
+  console.log('DELETE ->', table, id);
+
+  try {
+    const result = await genericService.delete_table_from_dataId(table, id);
+    return res.json(result);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message, code: err.code });
+  }
+}
+
 
 
 module.exports = router;

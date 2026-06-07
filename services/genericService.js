@@ -58,6 +58,7 @@ async function get_table_from_dataId(table, id) {
   queryText = queryText.replace('@pk', pk);
   const { rows } = await db.query(queryText, [id]);
   const data = rows[0];
+  console.log('get table from id');
   return data;
 };
 
@@ -69,6 +70,7 @@ async function delete_table_from_dataId(table, id) {
   queryText = queryText.replace('@pk', pk);
   const { rows } = await db.query(queryText, [id]);
   const data = rows[0];
+  console.log('delete table from id');
   return data;
 };
 
@@ -86,11 +88,11 @@ async function check_id(table, id) {
   return data;
 };
 
-async function getConfigList(table) {
-  const dataconfig = await get_table_data('config');
-  console.log("222")
-  return dataconfig;
-}
+// async function getConfigList(table) {
+//   const dataconfig = await get_table_data('config');
+//   console.log("333")
+//   return dataconfig;
+// }
 
 // ยังไม่ได้ test
 // async function updateConfig(table, id, value) {
@@ -112,6 +114,6 @@ module.exports = {
   get_table_from_dataId,
   delete_table_from_dataId,
   check_id,
-  getConfigList,
+  // getConfigList,
   // updateConfig
 };
