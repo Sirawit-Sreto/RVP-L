@@ -40,7 +40,9 @@ router.get('/config/list', getAllTable);
 router.get('/users/:id', getById);
 router.get('/projects/:id', getById);
 router.get('/config/:id', getById);
-router.post('/delete/users/:id', deleteById);
+// router.post('/users/update', updateById);
+// router.post('/projects/update', updateById);
+// router.post('/config/update', updateById);
 
 
 async function getAllTable(req, res) {
@@ -82,19 +84,19 @@ async function getById(req, res) {
   }
 }
 
-async function deleteById(req, res) {
-  const id = req.params.id;
-  const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
-  console.log('DELETE ->', table, id);
+// async function updateById(req, res) {
+//   const id = req.params.id;
+//   const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
+//   console.log('UPDATE ->', table, id);
 
-  try {
-    const result = await genericService.delete_table_from_dataId(table, id);
-    return res.json(result);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: err.message, code: err.code });
-  }
-}
+//   try {
+//     const result = await genericService.update_table_data(table, id, req.body);
+//     return res.json(result);
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ error: err.message, code: err.code });
+//   }
+// }
 
 
 

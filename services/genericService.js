@@ -62,17 +62,22 @@ async function get_table_from_dataId(table, id) {
   return data;
 };
 
-// // 3. DELETE ลบข้อมูลตาม ID
-async function delete_table_from_dataId(table, id) {
-  const pk = await get_primary_key_name(table);
-  let queryText = `UPDATE @table SET is_deleted = true WHERE @pk = $1 AND is_deleted = false RETURNING *`;
-  queryText = queryText.replace('@table', table);
-  queryText = queryText.replace('@pk', pk);
-  const { rows } = await db.query(queryText, [id]);
-  const data = rows[0];
-  console.log('delete table from id');
-  return data;
-};
+// // 3. UPDATE ปรับปรุงข้อมูลตาม ID
+// async function update_table_data(table, id, updateData) {
+//   const pk = await get_primary_key_name(table);
+//   let queryText = `UPDATE @table SET `;
+//   const columns = Object.keys(updateData);
+//   const values = Object.values(updateData);
+//   queryText += columns.map((col, index) => `${col} = $${index + 1}`).join(', ');
+//   queryText += ` WHERE @pk = $${columns.length + 1} RETURNING *`;
+
+//   queryText = queryText.replace('@table', table);
+//   queryText = queryText.replace('@pk', pk);
+//   const { rows } = await db.query(queryText, [...values, id]);
+//   const data = rows[0];
+//   console.log('update table from id');
+//   return data;
+// };
 
 // // 4. Check ID ว่ามีในตารางไหม
 async function check_id(table, id) {
@@ -112,7 +117,7 @@ module.exports = {
   check_table_available,
   get_table_data,
   get_table_from_dataId,
-  delete_table_from_dataId,
+  // update_table_data,
   check_id,
   // getConfigList,
   // updateConfig
