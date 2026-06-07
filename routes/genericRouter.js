@@ -34,7 +34,7 @@ async function checkTableAvailable(req, res, next) {
 }
 
 // Route declarations 
-router.get('/users/list', getAllTable);
+router.get('/users/list', getAllTable); 
 router.get('/projects/list', getAllTable);
 router.get('/config/list', getAllTable);
 router.get('/users/:id', getById);
@@ -59,16 +59,6 @@ async function getAllTable(req, res) {
     return res.status(500).json({ error: err.message, code: err.code });
   }
 }
-
-// async function getConfigList(req, res) {
-//   try {
-//     const result = await genericService.getConfigList();
-//     return res.json(result);
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ error: err.message, code: err.code });
-//   }
-// }
 
 async function getById(req, res) {
   const id = req.params.id;

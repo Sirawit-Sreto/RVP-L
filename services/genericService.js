@@ -93,23 +93,6 @@ async function check_id(table, id) {
   return data;
 };
 
-// async function getConfigList(table) {
-//   const dataconfig = await get_table_data('config');
-//   console.log("333")
-//   return dataconfig;
-// }
-
-// ยังไม่ได้ test
-// async function updateConfig(table, id, value) {
-//   const data = await get_table_data('config');
-//   const pk = await get_primary_key_name('config');
-//   let queryText = `UPDATE @table SET value = $1 WHERE @pk = $2 RETURNING *`;
-//   queryText = queryText.replace('@table', 'config');
-//   queryText = queryText.replace('@pk', pk);
-//   const { rows } = await db.query(queryText, [value, id]);
-//   const updatedData = rows[0];
-//   return updatedData;
-// }
 
 
 
@@ -119,6 +102,4 @@ module.exports = {
   get_table_from_dataId,
   // update_table_data,
   check_id,
-  // getConfigList,
-  // updateConfig
 };
