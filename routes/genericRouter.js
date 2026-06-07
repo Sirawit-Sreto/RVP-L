@@ -42,7 +42,7 @@ router.get('/projects/:id', getById);
 router.get('/config/:id', getById);
 // router.post('/users/update', updateById);
 // router.post('/projects/update', updateById);
-// router.post('/config/update', updateById);
+router.post('/config/update/:id', updateById);
 
 
 async function getAllTable(req, res) {
@@ -74,19 +74,22 @@ async function getById(req, res) {
   }
 }
 
-// async function updateById(req, res) {
-//   const id = req.params.id;
-//   const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
-//   console.log('UPDATE ->', table, id);
+async function updateById(req, res) {
+  const id = req.params.id || req.body.id;
+  const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
+  console.log('UPDATE ->', table, id);
 
-//   try {
-//     const result = await genericService.update_table_data(table, id, req.body);
-//     return res.json(result);
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ error: err.message, code: err.code });
-//   }
-// }
+  try {
+    if (!id) {
+      return res.status(400).json({ error: 'missing id parameter' });
+    }
+    const result = await genericService.update_table_data(table, id, req.body);
+    return res.json(result);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message, code: err.code });
+  }
+}
 
 
 

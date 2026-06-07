@@ -36,42 +36,37 @@ psql "$DATABASE_URL" -f schema.sql
 
 
 **API Overview**
-- Base route: `/api`
-- Generic table router: `/api/:table` (supports CRUD and simple health check)
+This backend exposes table-specific endpoints (implemented in `routes/genericRouter.js`). The router is mounted at the application root, so the available endpoints are at top-level paths such as `/users` and `/projects`.
 
-Allowed tables and their primary keys: tablePK
+Implemented endpoints (examples)
+- `GET /users/list` — list up to 100 rows from `users`
+- `GET /projects/list` — list up to 100 rows from `projects`
+- `GET /config/list` — list up to 100 rows from `config`
+- `GET /users/:id` — get user by id
+- `GET /projects/:id` — get project by id
+- `GET /config/:id` — get config by id
+- `POST /config/update/:id` — update a config row (JSON body)
 
-- `task` (task_id)
-- `outsource` (user_out_id)
-- `users` (user_id)
-- `roles` (role_id)
-- `cr` (cr_id)
-- `request` (req_id)
-- `projects` (project_id)
-- `status` (status_id)
-- `tags` (tag_id)
-- `category` (category_id)
-- `types` (type_id)
-- `department` (department_id)
-- `position` (position_id)
-- `config` (config_id)
+Health check endpoint:
+- `GET /test-health/:table` — validates the requested table exists and the DB is reachable (returns status 200 when OK)
 
-Additional endpoints:
-- `GET /api/:table/health-check-status/:table` — checks DB connectivity for the table and returns `{ ready: true }` when healthy.
-
-Shortcut routes:
-- `GET /users` — convenience route that returns the same result as `GET /api/users` (implemented with route helpers).
+Notes on router mounting:
+- The code also defines an `api` router under `/api` (see `routes/api.js`) but the table routes are available at root (`/users/...`, `/projects/...`, etc.) because `genericRouter` is mounted at `/` in `server.js`.
 
 Examples (curl)
 
 ```bash
-# List up to 100 rows from `users`:
-curl http://localhost:5000/users
+# List users:
+curl http://localhost:5000/users/list
 
-# Get a single item by id:
+# Get user by id (replace 123):
 curl http://localhost:5000/users/123
 
-# Health check for `tablePK`:
-curl 
-curl 
+# Health check for table 'users':
+curl http://localhost:5000/test-health/users
+
+# Update config (example):
+curl -X POST http://localhost:5000/config/update/1 \
+  -H "Content-Type: application/json" \
+  -d '{"config_name":"mobile app_master updated","group_choice":"category"}'
 ```
