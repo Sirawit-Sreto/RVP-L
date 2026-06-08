@@ -34,15 +34,39 @@ async function checkTableAvailable(req, res, next) {
 }
 
 // Route declarations 
-router.get('/users/list', getAllTable); 
+router.get('/users/list', getAllTable);
+router.get('/outsource/list', getAllTable);
 router.get('/projects/list', getAllTable);
+router.get('/roles/list', getAllTable);
+router.get('/status/list', getAllTable);
+router.get('/cr/list', getAllTable);
+router.get('/request/list', getAllTable);
+router.get('/task/list', getAllTable);
 router.get('/config/list', getAllTable);
+// chirden of config
+router.get('/department/list', getAllTable);
+router.get('/type/list', getAllTable);
+router.get('/category/list', getAllTable);
+router.get('/position/list', getAllTable);
+router.get('/tags/list', getAllTable);
+
+
+// get by ID
 router.get('/users/:id', getById);
 router.get('/projects/:id', getById);
 router.get('/config/:id', getById);
+router.get('/outsource/:id', getById);
+router.get('/roles/:id', getById);
+router.get('/status/:id', getById);
+router.get('/cr/:id', getById);
+router.get('/request/:id', getById);
+router.get('/task/:id', getById);
+
+
+// delete by ID
 // router.post('/users/update', updateById);
 // router.post('/projects/update', updateById);
-router.post('/config/update/:id', updateById);
+// router.post('/config/update/:id', updateById);
 
 
 async function getAllTable(req, res) {
