@@ -20,10 +20,7 @@ async function checkTableAvailable(req, res, next) {
   const table = req.params.table || req.path.split('/').filter(Boolean)[0];
   console.log("checkTableAvailable ->", table);
   try {
-      // เรียกใช้ฟังก์ชันผ่านตัวแปร genericService ที่คุณ require ไว้ด้านบน
       await genericService.check_table_available(table);
-      
-      // ฝากชื่อตารางที่ตรวจสอบแล้วไว้ใน req เผื่อ getAllTable เอาไปใช้ต่อ
       req.validatedTable = table;
       
       next(); // ตารางถูกต้อง ส่งไปทำงานต่อได้
@@ -73,21 +70,39 @@ router.get('/tags/:id', checkTableAvailable, getById);
 
 
 // insert table by ID 
-router.post('/users/update/:id',checkTableAvailable, createByTable);
-router.post('/outsource/update/:id', checkTableAvailable, createByTable);
-router.post('/projects/update/:id', checkTableAvailable, createByTable);
-router.post('/roles/update/:id', checkTableAvailable, createByTable);
-router.post('/status/update/:id', checkTableAvailable, createByTable);
-router.post('/cr/update/:id', checkTableAvailable, createByTable);
-router.post('/request/update/:id', checkTableAvailable, createByTable);
-router.post('/task/update/:id', checkTableAvailable, createByTable);
-router.post('/config/update/:id', checkTableAvailable, createByTable);
+router.post('/users/add',checkTableAvailable, createByTable);
+router.post('/outsource/add', checkTableAvailable, createByTable);
+router.post('/projects/add', checkTableAvailable, createByTable);
+router.post('/roles/add', checkTableAvailable, createByTable);
+router.post('/status/add', checkTableAvailable, createByTable);
+router.post('/cr/add', checkTableAvailable, createByTable);
+router.post('/request/add', checkTableAvailable, createByTable);
+router.post('/task/add', checkTableAvailable, createByTable);
+router.post('/config/add', checkTableAvailable, createByTable);
 //children of config
-router.post('/department/update/:id', checkTableAvailable, createByTable);
-router.post('/type/update/:id', checkTableAvailable, createByTable);
-router.post('/category/update/:id', checkTableAvailable, createByTable);
-router.post('/position/update/:id', checkTableAvailable, createByTable);
-router.post('/tags/update/:id', checkTableAvailable, createByTable);
+router.post('/department/add', checkTableAvailable, createByTable);
+router.post('/type/add', checkTableAvailable, createByTable);
+router.post('/category/add', checkTableAvailable, createByTable);
+router.post('/position/add', checkTableAvailable, createByTable);
+router.post('/tags/add', checkTableAvailable, createByTable);
+
+
+//delete by Id (soft delete)
+router.post('/users/disable/:id', checkTableAvailable, disableById);
+router.post('/outsource/disable/:id', checkTableAvailable, disableById);
+router.post('/projects/disable/:id', checkTableAvailable, disableById);
+router.post('/roles/disable/:id', checkTableAvailable, disableById);
+router.post('/status/disable/:id', checkTableAvailable, disableById);
+router.post('/cr/disable/:id', checkTableAvailable, disableById);
+router.post('/request/disable/:id', checkTableAvailable, disableById);
+router.post('/task/disable/:id', checkTableAvailable, disableById);
+router.post('/config/disable/:id', checkTableAvailable, disableById);
+//children of config
+router.post('/department/disable/:id', checkTableAvailable, disableById);
+router.post('/type/disable/:id', checkTableAvailable, disableById);
+router.post('/category/disable/:id', checkTableAvailable, disableById);
+router.post('/position/disable/:id', checkTableAvailable, disableById);
+router.post('/tags/disable/:id', checkTableAvailable, disableById);
 
 
 async function getAllTable(req, res) {
@@ -131,6 +146,22 @@ async function createByTable(req, res) {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: err.message, code: err.code });
+  }
+}
+
+async function disableById(req,res) {
+  const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
+  const id = req.params.id;
+  console.log('DISABLE ->', table,'id', id);
+
+  try{
+    const body = req.body
+    const result = await genericService.disable_table_data(table, id);
+    return res.json(result);
+  }catch (err) {
+    console.error(err);
+    const statusCode = err.status || 500;
+    return res.status(statusCode).json({ error: err.message, code: err.code });
   }
 }
 

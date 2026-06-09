@@ -9,6 +9,7 @@ const db = require("./db");
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 app.use("/api", apiRoutes);
@@ -49,5 +50,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
-
-

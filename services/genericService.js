@@ -77,7 +77,7 @@ async function insert_table_data(table, insertData) {
   return data;
 };
 
-// // 4. Check ID ว่ามีในตารางไหม
+// 4. Check ID ว่ามีในตารางไหม
 async function check_id(table, id) {
   const data = await get_table_from_dataId(table, id);
   if (!data) {
@@ -91,7 +91,24 @@ async function check_id(table, id) {
   return data;
 };
 
+// 5. disable by ID (soft delete)
+async function disable_table_data(table, id) {
+  const pk = await get_primary_key_name(table);
+  let queryText = `UPDATE @table SET is_deleted = true WHERE @pk = $1 RETURNING *`;
+  queryText = queryText.replace('@table', table);
+  queryText = queryText.replace('@pk', pk);
 
+  const { rows } = await db.query(queryText, [id]);
+  if (rows.length === 0) {
+    const error = new Error(`not found ID: ${id} in table: @table`.replace('@table', table));
+    error.status = 404;
+    throw error;
+  }
+
+  const data = rows[0];
+  console.log('Successfully disabled data from ' + table);
+  return data;
+}
 
 
 module.exports = {
@@ -100,4 +117,5 @@ module.exports = {
   get_table_from_dataId,
   insert_table_data,
   check_id,
+  disable_table_data,
 };
