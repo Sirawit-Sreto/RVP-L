@@ -32,77 +32,91 @@ async function checkTableAvailable(req, res, next) {
       });
 }
 };
+// check router
+// router.use('/:table', (req, res, next) => {
+//   console.log('test')
+//   next();
+// }, checkTableAvailable);
+
+
+router.use('/:table', checkTableAvailable);
+  
+router.get('/:table/list', getAllTable);
+router.get('/:table/:id', getById);
+router.post('/:table/add', createByTable);
+router.post('/:table/disable/:id', disableById);
+
 
 // Route declarations 
-router.get('/users/list', checkTableAvailable, getAllTable);
-router.get('/outsource/list', checkTableAvailable, getAllTable);
-router.get('/projects/list', checkTableAvailable, getAllTable);
-router.get('/roles/list', checkTableAvailable, getAllTable);
-router.get('/status/list', checkTableAvailable, getAllTable);
-router.get('/cr/list', checkTableAvailable, getAllTable);
-router.get('/request/list', checkTableAvailable, getAllTable);
-router.get('/task/list', checkTableAvailable, getAllTable);
-router.get('/config/list', checkTableAvailable, getAllTable);
-// children of config
-router.get('/department/list', checkTableAvailable, getAllTable);
-router.get('/type/list', checkTableAvailable, getAllTable);
-router.get('/category/list', checkTableAvailable, getAllTable);
-router.get('/position/list', checkTableAvailable, getAllTable);
-router.get('/tags/list', checkTableAvailable, getAllTable);
+// roiute.get('/users/list', checkTableAvailable, getAllTable);
+// router.get('/outsource/list', checkTableAvailable, getAllTable);
+// router.get('/projects/list', checkTableAvailable, getAllTable);
+// router.get('/roles/list', checkTableAvailable, getAllTable);
+// router.get('/status/list', checkTableAvailable, getAllTable);
+// router.get('/cr/list', checkTableAvailable, getAllTable);
+// router.get('/request/list', checkTableAvailable, getAllTable);
+// router.get('/task/list', checkTableAvailable, getAllTable);
+// router.get('/config/list', checkTableAvailable, getAllTable);
+// // children of config
+// router.get('/department/list', checkTableAvailable, getAllTable);
+// router.get('/type/list', checkTableAvailable, getAllTable);
+// router.get('/category/list', checkTableAvailable, getAllTable);
+// router.get('/position/list', checkTableAvailable, getAllTable);
+// router.get('/tags/list', checkTableAvailable, getAllTable);
 
 
 // get by ID
-router.get('/users/:id', checkTableAvailable, getById);
-router.get('/outsource/:id', checkTableAvailable, getById);
-router.get('/projects/:id', checkTableAvailable, getById);
-router.get('/roles/:id', checkTableAvailable, getById);
-router.get('/status/:id', checkTableAvailable, getById);
-router.get('/cr/:id', checkTableAvailable, getById);
-router.get('/request/:id', checkTableAvailable, getById);
-router.get('/task/:id', checkTableAvailable, getById);
-router.get('/config/:id', checkTableAvailable, getById);
-//children of config
-router.get('/department/:id', checkTableAvailable, getById);
-router.get('/type/:id', checkTableAvailable, getById);
-router.get('/category/:id', checkTableAvailable, getById);
-router.get('/position/:id', checkTableAvailable, getById);
-router.get('/tags/:id', checkTableAvailable, getById);
+// router.get('/users/:id', checkTableAvailable, getById);
+// router.get('/outsource/:id', checkTableAvailable, getById);
+// router.get('/projects/:id', checkTableAvailable, getById);
+// router.get('/roles/:id', checkTableAvailable, getById);
+// router.get('/status/:id', checkTableAvailable, getById);
+// router.get('/cr/:id', checkTableAvailable, getById);
+// router.get('/request/:id', checkTableAvailable, getById);
+// router.get('/task/:id', checkTableAvailable, getById);
+// router.get('/config/:id', checkTableAvailable, getById);
+// //children of config
+// router.get('/department/:id', checkTableAvailable, getById);
+// router.get('/type/:id', checkTableAvailable, getById);
+// router.get('/category/:id', checkTableAvailable, getById);
+// router.get('/position/:id', checkTableAvailable, getById);
+// router.get('/tags/:id', checkTableAvailable, getById);
 
 
 // insert table by ID 
-router.post('/users/add',checkTableAvailable, createByTable);
-router.post('/outsource/add', checkTableAvailable, createByTable);
-router.post('/projects/add', checkTableAvailable, createByTable);
-router.post('/roles/add', checkTableAvailable, createByTable);
-router.post('/status/add', checkTableAvailable, createByTable);
-router.post('/cr/add', checkTableAvailable, createByTable);
-router.post('/request/add', checkTableAvailable, createByTable);
-router.post('/task/add', checkTableAvailable, createByTable);
-router.post('/config/add', checkTableAvailable, createByTable);
-//children of config
-router.post('/department/add', checkTableAvailable, createByTable);
-router.post('/type/add', checkTableAvailable, createByTable);
-router.post('/category/add', checkTableAvailable, createByTable);
-router.post('/position/add', checkTableAvailable, createByTable);
-router.post('/tags/add', checkTableAvailable, createByTable);
+// router.post('/users/add',checkTableAvailable, createByTable);
+// router.post('/outsource/add', checkTableAvailable, createByTable);
+// router.post('/projects/add', checkTableAvailable, createByTable);
+// router.post('/roles/add', checkTableAvailable, createByTable);
+// router.post('/status/add', checkTableAvailable, createByTable);
+// router.post('/cr/add', checkTableAvailable, createByTable);
+// router.post('/request/add', checkTableAvailable, createByTable);
+// router.post('/task/add', checkTableAvailable, createByTable);
+// router.post('/config/add', checkTableAvailable, createByTable);
+// //children of config
+// router.post('/department/add', checkTableAvailable, createByTable);
+// router.post('/type/add', checkTableAvailable, createByTable);
+// router.post('/category/add', checkTableAvailable, createByTable);
+// router.post('/position/add', checkTableAvailable, createByTable);
+// router.post('/tags/add', checkTableAvailable, createByTable);
 
 
 //delete by Id (soft delete)
-router.post('/users/disable/:id', checkTableAvailable, disableById);
-router.post('/outsource/disable/:id', checkTableAvailable, disableById);
-router.post('/projects/disable/:id', checkTableAvailable, disableById);
-router.post('/roles/disable/:id', checkTableAvailable, disableById);
-router.post('/status/disable/:id', checkTableAvailable, disableById);
-router.post('/cr/disable/:id', checkTableAvailable, disableById);
-router.post('/request/disable/:id', checkTableAvailable, disableById);
-router.post('/task/disable/:id', checkTableAvailable, disableById);
-router.post('/config/disable/:id', checkTableAvailable, disableById);
-//children of config
-router.post('/department/disable/:id', checkTableAvailable, disableById);
-router.post('/type/disable/:id', checkTableAvailable, disableById);
-router.post('/category/disable/:id', checkTableAvailable, disableById);
-router.post('/position/disable/:id', checkTableAvailable, disableById);
-router.post('/tags/disable/:id', checkTableAvailable, disableById);
+// router.post('/users/disable/:id', checkTableAvailable, disableById);
+// router.post('/outsource/disable/:id', checkTableAvailable, disableById);
+// router.post('/projects/disable/:id', checkTableAvailable, disableById);
+// router.post('/roles/disable/:id', checkTableAvailable, disableById);
+// router.post('/status/disable/:id', checkTableAvailable, disableById);
+// router.post('/cr/disable/:id', checkTableAvailable, disableById);
+// router.post('/request/disable/:id', checkTableAvailable, disableById);
+// router.post('/task/disable/:id', checkTableAvailable, disableById);
+// router.post('/config/disable/:id', checkTableAvailable, disableById);
+// //children of config
+// router.post('/department/disable/:id', checkTableAvailable, disableById);
+// router.post('/type/disable/:id', checkTableAvailable, disableById);
+// router.post('/category/disable/:id', checkTableAvailable, disableById);
+// router.post('/position/disable/:id', checkTableAvailable, disableById);
+// router.post('/tags/disable/:id', checkTableAvailable, disableById);
 
 
 async function getAllTable(req, res) {
