@@ -43,7 +43,7 @@ const get_table_data = async (table) => {
   queryText += ` ORDER BY ${await get_primary_key_name(table)} DESC LIMIT 100`;
   queryText = queryText.replace('@table', table);
   const { rows } = await db.query(queryText);
-  console.log('get ' + table);
+  console.log('show ' + table);
   return rows;
 };
 
@@ -55,7 +55,7 @@ async function get_table_from_dataId(table, id) {
   queryText = queryText.replace('@pk', pk);
   const { rows } = await db.query(queryText, [id]);
   const data = rows[0];
-  console.log('get ' + table + ' from id');
+  console.log('show ' + table + ' from id');
   return data;
 };
 
