@@ -43,12 +43,9 @@ const get_table_data = async (table) => {
   queryText += ` ORDER BY ${await get_primary_key_name(table)} DESC LIMIT 100`;
   queryText = queryText.replace('@table', table);
   const { rows } = await db.query(queryText);
-  console.log('get table');
+  console.log('get ' + table);
   return rows;
 };
-
-
-
 
 // // 2. GET ดึงข้อมูลตาม ID
 async function get_table_from_dataId(table, id) {
@@ -58,24 +55,25 @@ async function get_table_from_dataId(table, id) {
   queryText = queryText.replace('@pk', pk);
   const { rows } = await db.query(queryText, [id]);
   const data = rows[0];
-  console.log('get table from id');
+  console.log('get ' + table + ' from id');
   return data;
 };
 
-// 3. UPDATE ปรับปรุงข้อมูลตาม ID
-async function update_table_data(table, id, updateData) {
-  const pk = await get_primary_key_name(table);
-  let queryText = `UPDATE @table SET `;
-  const columns = Object.keys(updateData);
-  const values = Object.values(updateData);
-  queryText += columns.map((col, index) => `${col} = $${index + 1}`).join(', ');
-  queryText += ` WHERE @pk = $${columns.length + 1} RETURNING *`;
+// 3. เพิ่มข้อมูลใหม่ในตาราง
+async function insert_table_data(table, insertData) {
+  const columns = Object.keys(insertData);
+  if (columns.length === 0) {
+    throw { code: 400, message: 'No data provided for insert' };
+  }
+  const values = Object.values(insertData);
+  const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
 
+  let queryText = `INSERT INTO @table (${columns.join(', ')}) VALUES (${placeholders}) RETURNING *`;
   queryText = queryText.replace('@table', table);
-  queryText = queryText.replace('@pk', pk);
-  const { rows } = await db.query(queryText, [...values, id]);
+
+  const { rows } = await db.query(queryText, values);
   const data = rows[0];
-  console.log('update table from id');
+  console.log('inserted data into ' + table);
   return data;
 };
 
@@ -100,6 +98,6 @@ module.exports = {
   check_table_available,
   get_table_data,
   get_table_from_dataId,
-  update_table_data,
+  insert_table_data,
   check_id,
 };

@@ -43,7 +43,7 @@ router.get('/cr/list', getAllTable);
 router.get('/request/list', getAllTable);
 router.get('/task/list', getAllTable);
 router.get('/config/list', getAllTable);
-// chirden of config
+// children of config
 router.get('/department/list', getAllTable);
 router.get('/type/list', getAllTable);
 router.get('/category/list', getAllTable);
@@ -53,27 +53,31 @@ router.get('/tags/list', getAllTable);
 
 // get by ID
 router.get('/users/:id', getById);
-router.get('/projects/:id', getById);
-router.get('/config/:id', getById);
 router.get('/outsource/:id', getById);
+router.get('/projects/:id', getById);
 router.get('/roles/:id', getById);
 router.get('/status/:id', getById);
 router.get('/cr/:id', getById);
 router.get('/request/:id', getById);
 router.get('/task/:id', getById);
+router.get('/config/:id', getById);
 
 
-// delete by ID
-// router.post('/users/update', updateById);
-// router.post('/projects/update', updateById);
-// router.post('/config/update/:id', updateById);
+// insert table by ID 
+router.post('/users/update/:id', createByTable);
+router.post('/outsource/update/:id', createByTable);
+router.post('/projects/update/:id', createByTable);
+router.post('/roles/update/:id', createByTable);
+router.post('/status/update/:id', createByTable);
+router.post('/cr/update/:id', createByTable);
+router.post('/request/update/:id', createByTable);
+router.post('/task/update/:id', createByTable);
+router.post('/config/update/:id', createByTable);
 
 
 async function getAllTable(req, res) {
   const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
-
   console.log('GET ' + table + ' all');
-
 
   try {
     const result = await genericService.get_table_data(table);
@@ -98,23 +102,22 @@ async function getById(req, res) {
   }
 }
 
-async function updateById(req, res) {
-  const id = req.params.id || req.body.id;
+async function createByTable(req, res) {
   const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
-  console.log('UPDATE ->', table, id);
+  console.log('CREATE ->', table);
 
   try {
-    if (!id) {
-      return res.status(400).json({ error: 'missing id parameter' });
+    const body = req.body || {};
+    if (Object.keys(body).length === 0) {
+      return res.status(400).json({ error: 'missing request body' });
     }
-    const result = await genericService.update_table_data(table, id, req.body);
+    const result = await genericService.insert_table_data(table, body);
     return res.json(result);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: err.message, code: err.code });
   }
 }
-
 
 
 module.exports = router;
