@@ -19,13 +19,17 @@ const get_primary_key_name = async (table) => {
 async function checkTableAvailable(req, res, next) {
   const table = req.params.table || req.path.split('/').filter(Boolean)[0];
   console.log("checkTableAvailable ->", table);
+  if (!table || table === '.well-known') {
+    return res.status(404).json({
+      success: false,
+      message: "Resource not found or invalid route parameter."
+    });
+  }
   try {
       await genericService.check_table_available(table);
       req.validatedTable = table;
-      
-      next(); // ตารางถูกต้อง ส่งไปทำงานต่อได้
+      next(); 
     } catch (error) {
-      // ถ้าหาตารางไม่เจอ ตัดจบและส่งสเตตัส 404 ทันที
       return res.status(error.status || 404).json({
         success: false,
         message: error.message
@@ -33,19 +37,12 @@ async function checkTableAvailable(req, res, next) {
 }
 };
 // check router
-// router.use('/:table', (req, res, next) => {
-//   console.log('test')
-//   next();
-// }, checkTableAvailable);
-
-
 router.use('/:table', checkTableAvailable);
-  
+
 router.get('/:table/list', getAllTable);
 router.get('/:table/:id', getById);
 router.post('/:table/add', createByTable);
 router.post('/:table/disable/:id', disableById);
-
 
 // Route declarations 
 // roiute.get('/users/list', checkTableAvailable, getAllTable);
