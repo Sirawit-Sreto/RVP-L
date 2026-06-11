@@ -1,4 +1,9 @@
 CREATE SCHEMA "public";
+CREATE TABLE "api" (
+	"api_id" serial PRIMARY KEY,
+	"api_category" varchar(100) NOT NULL,
+	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP
+);
 CREATE TABLE "category" (
 	"category_id" serial PRIMARY KEY,
 	"category_name" varchar(100) NOT NULL,
@@ -9,15 +14,7 @@ CREATE TABLE "config" (
 	"config_name" varchar(100) NOT NULL,
 	"group_choice" varchar(100) NOT NULL,
 	"create_at" timestamp DEFAULT CURRENT_TIMESTAMP
-); -- note config (drop down)
--- group_choice = tags, category, types, department, position, tools
--- category = mobile app_master, .net app_master
--- types = INnHouse_master, OutSource_master
--- tags = Bug_master, Pending Review_master
--- position = PM_master,SA_master, UXUI_master, Dev_master
--- department = Information Technology_master, Software Development_master, DevOps & Infrastructure_master
--- tools = Figma_master, Miro_master
-
+);
 CREATE TABLE "cr" (
 	"cr_id" serial PRIMARY KEY,
 	"user_id" integer,
@@ -103,9 +100,15 @@ CREATE TABLE "task" (
 	"task_description" varchar(500),
 	"create_at" timestamp DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE "tech" (
+	"tech_id" serial,
+	"tech_category" varchar(100) NOT NULL,
+	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT "techStack_pkey" PRIMARY KEY("tech_id")
+);
 CREATE TABLE "tools" (
 	"tools_id" serial PRIMARY KEY,
-	"tools_name" varchar(100) NOT NULL,
+	"tools_category" varchar(100) NOT NULL,
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE "types" (
@@ -125,6 +128,7 @@ CREATE TABLE "users" (
 	"is_deleted" boolean DEFAULT false,
 	"password_hash" varchar(255) DEFAULT NULL
 );
+CREATE UNIQUE INDEX "api_pkey" ON "api" ("api_id");
 CREATE UNIQUE INDEX "category_pkey" ON "category" ("category_id");
 CREATE UNIQUE INDEX "config_pkey" ON "config" ("config_id");
 CREATE UNIQUE INDEX "cr_pkey" ON "cr" ("cr_id");
@@ -137,6 +141,7 @@ CREATE UNIQUE INDEX "roles_pkey" ON "roles" ("role_id");
 CREATE UNIQUE INDEX "status_pkey" ON "status" ("status_id");
 CREATE UNIQUE INDEX "tags_pkey" ON "tags" ("tag_id");
 CREATE UNIQUE INDEX "task_pkey" ON "task" ("task_id");
+CREATE UNIQUE INDEX "techStack_pkey" ON "tech" ("tech_id");
 CREATE UNIQUE INDEX "tools_pkey" ON "tools" ("tools_id");
 CREATE UNIQUE INDEX "types_pkey" ON "types" ("type_id");
 CREATE UNIQUE INDEX "users_pkey" ON "users" ("user_id");
