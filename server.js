@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const cors = require("cors");
 const apiRoutes = require("./routes/api");
@@ -12,13 +13,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use("/api", apiRoutes);
+const authRoutes = require("./routes/auth");
+const authenticateToken = require("./middlewares/auth");
 
+
+app.use("/auth", authRoutes); 
+
+app.use("/api", apiRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Backend is running " });
 });
-
 
 app.get("/test-health/:table", async (req, res) => {
   const table = req.params.table;
@@ -42,8 +47,11 @@ app.get("/test-health/:table", async (req, res) => {
   }
 });
 
+
 const genericRouter = require("./routes/genericRouter");
-app.use('/', genericRouter);
+
+
+app.use('/', authenticateToken, genericRouter);
 
 
 const PORT = process.env.PORT || 5000;

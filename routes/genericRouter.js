@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const db = require("../db");
 const genericService = require("../services/genericService");
+const authenticateToken = require('../middlewares/auth');
 
 
 const get_primary_key_name = async (table) => {
@@ -37,12 +38,18 @@ async function checkTableAvailable(req, res, next) {
 }
 };
 // check router
-router.use('/:table', checkTableAvailable);
+// router.use('/@table', checkTableAvailable);
+router.get('/:table/list', authenticateToken, checkTableAvailable, getAllTable);
 
-router.get('/:table/list', getAllTable);
-router.get('/:table/:id', getById);
-router.post('/:table/add', createByTable);
-router.post('/:table/disable/:id', disableById);
+// router.post("/receiptType/add", wrapRouteWithDefaults(), (req, res) => {
+//   fnRvpService(req, res, addReceiptType);
+// });
+
+
+// router.get('/:table/list', getAllTable);
+// router.get('/:table/:id', getById);
+// router.post('/:table/add', createByTable);
+// router.post('/:table/disable/:id', disableById);
 
 // Route declarations 
 // roiute.get('/users/list', checkTableAvailable, getAllTable);
@@ -117,7 +124,8 @@ router.post('/:table/disable/:id', disableById);
 
 
 async function getAllTable(req, res) {
-  const table = req.params.table || (req.path.split('/').filter(Boolean)[0]);
+  // 💡 ปรับมาดึงจาก req.validatedTable ที่ Middleware หาไว้ให้แล้วได้เลย
+  const table = req.validatedTable || (req.params && req.params.table ? req.params.table : null) || (req && req.path ? req.path.split('/').filter(Boolean)[0] : '');
   console.log('GET ' + table + ' all');
 
   try {
@@ -125,7 +133,10 @@ async function getAllTable(req, res) {
     return res.json(result);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: err.message, code: err.code });
+    // ตรวจสอบชัวร์ ๆ ว่ามีตัวแปร res ก่อนรันตอบกลับ
+    if (res && typeof res.status === 'function') {
+      return res.status(500).json({ error: err.message, code: err.code });
+    }
   }
 }
 
