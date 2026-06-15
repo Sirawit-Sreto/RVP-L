@@ -29,17 +29,13 @@ const check_table_available = async (table) => {
     error.status = 404;
     throw error;
 }
-
+  console.log('Table ' + table + ' is available.');
   return table;
 }
 
 // 1. GET ดึงข้อมูลทั้งหมด
 const get_table_data = async (table) => {
   let queryText = `SELECT * FROM @table`;
-  // เอาไว้เผื่อตอนที่ไม่ต้องการให้โชว์คนที่โดนลบออกไปแล้ว
-  // if (table === "projects" || table === "users") {
-  //   queryText += ` WHERE is_deleted = false`;
-  // }
   queryText += ` ORDER BY ${await get_primary_key_name(table)} DESC LIMIT 100`;
   queryText = queryText.replace('@table', table);
   const { rows } = await db.query(queryText);

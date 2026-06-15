@@ -1,11 +1,9 @@
 const jwt = require('jsonwebtoken');
 
 const authenticateToken = (req, res, next) => {
-  // 1. ดึง Token จาก Header ตามปกติ (สำหรับ Postman / Frontend จริง)
   const authHeader = req.headers['authorization'];
   let token = authHeader && authHeader.split(' ')[1];
-
-  // 2. 💡 ทางลัดสำหรับ Web Browser: ถ้าใน Header ไม่มี ให้แอบไปเช็กใน Query String บน URL (?token=...)
+  
   if (!token && req.query.token) {
     token = req.query.token;
   }

@@ -70,3 +70,18 @@ curl -X POST http://localhost:5000/users/update/7 \
   -H "Content-Type: application/json" \
   -d '{"role_id": 2, "user_firstname": "Sre", "user_lastname": "To", "user_department": "Home", "user_pic": "PICPIC555", "is_deleted": false}'
 ```
+
+``` Postman
+auth/login 
+{
+    "user_firstname": "Auth",
+    "user_lastname": "Success",
+    "password": "password123"
+}
+
+{
+    "user_firstname": "A",
+    "user_lastname": "B",
+    "password": "123"
+}
+```
