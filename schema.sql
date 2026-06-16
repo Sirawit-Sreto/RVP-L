@@ -29,6 +29,13 @@ CREATE TABLE "department" (
 	"department_name" varchar(100) NOT NULL,
 	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE "movement" (
+	"move_id" serial PRIMARY KEY,
+	"user_id" integer,
+	"project_id" integer,
+	"move_name" varchar(100) NOT NULL,
+	"create_at" timestamp DEFAULT CURRENT_TIMESTAMP
+);
 CREATE TABLE "outsource" (
 	"user_out_id" serial PRIMARY KEY,
 	"user_id" integer,
@@ -100,6 +107,11 @@ CREATE TABLE "task" (
 	"task_description" varchar(500),
 	"create_at" timestamp DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE "teamMember" (
+	"team_id" serial PRIMARY KEY,
+	"team_category" varchar(100) NOT NULL,
+	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP
+);
 CREATE TABLE "tech" (
 	"tech_id" serial,
 	"tech_category" varchar(100) NOT NULL,
@@ -133,6 +145,7 @@ CREATE UNIQUE INDEX "category_pkey" ON "category" ("category_id");
 CREATE UNIQUE INDEX "config_pkey" ON "config" ("config_id");
 CREATE UNIQUE INDEX "cr_pkey" ON "cr" ("cr_id");
 CREATE UNIQUE INDEX "department_pkey" ON "department" ("department_id");
+CREATE UNIQUE INDEX "movement_pkey" ON "movement" ("move_id");
 CREATE UNIQUE INDEX "outsource_pkey" ON "outsource" ("user_out_id");
 CREATE UNIQUE INDEX "position_pkey" ON "position" ("position_id");
 CREATE UNIQUE INDEX "projects_pkey" ON "projects" ("project_id");
@@ -141,6 +154,7 @@ CREATE UNIQUE INDEX "roles_pkey" ON "roles" ("role_id");
 CREATE UNIQUE INDEX "status_pkey" ON "status" ("status_id");
 CREATE UNIQUE INDEX "tags_pkey" ON "tags" ("tag_id");
 CREATE UNIQUE INDEX "task_pkey" ON "task" ("task_id");
+CREATE UNIQUE INDEX "teamMember_pkey" ON "teamMember" ("team_id");
 CREATE UNIQUE INDEX "techStack_pkey" ON "tech" ("tech_id");
 CREATE UNIQUE INDEX "tools_pkey" ON "tools" ("tools_id");
 CREATE UNIQUE INDEX "types_pkey" ON "types" ("type_id");

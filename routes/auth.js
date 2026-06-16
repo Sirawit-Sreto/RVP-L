@@ -34,7 +34,7 @@ router.post('/login', async (req, res) => {
   const { user_id, password } = req.body;
 
   if (!user_id || !password) {
-    return res.status(400).json({ error: 'user_id and password are required.' });
+    return res.status(400).json({ error: 'user Id and password are required.' });
   }
 
   try {
